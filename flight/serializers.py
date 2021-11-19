@@ -1,3 +1,4 @@
+from django.db.models.fields import IntegerField
 from rest_framework import serializers
 from .models import Flight, Passenger, Reservation
 from django.contrib.auth.models import User
@@ -10,15 +11,30 @@ class FlightSerializer(serializers.ModelSerializer):
   fields = ['flightNumber', 'operatingAirlines', 'departureCity','dateOfDeparture']
   
 class PassengerSerializer(serializers.ModelSerializer):
- class Meta:
-  model = Passenger
-  fields = ['firstName', 'lastName', 'email', 'phone']
+  flight = serializers.StringRelatedField() # ismin görülmesi icin
+  flight_id = serializers.IntegerField()  # StringRelatedField kullanirsak Post a izin vermiyor. Bunu ezmek icin flight_id yi Integerfield yapip readOnly den kurtariyoruz. Post yaparken flight_id yi göndermemiz yeterli oluyor
+  user = serializers.StringRelatedField()
+  user_id = serializers.IntegerField()
+  class Meta:
+    model = Passenger
+    fields = ['flight','flight_id','user','user_id','firstName', 'lastName', 'email', 'phone']
   
 
 class ReservationSerializer(serializers.ModelSerializer):
- class Meta:
-  model = Reservation
-  fields = ['flight', 'passenger', 'user']
+  flight = serializers.StringRelatedField()
+  flight_id = serializers.IntegerField()
+  passenger = serializers.StringRelatedField()
+  passenger_id = serializers.IntegerField()
+  user = serializers.StringRelatedField()
+  user_id = serializers.IntegerField()
+  # passengers = serializers.SerializerMethodField()
+  class Meta:
+    model = Reservation
+    fields = ['flight','flight_id', 'passenger','passenger_id','user','user_id']
+  # def get_passengers(self,obj):
+  #     passengers_data = Passenger.objects.all()
+  #     serializer = PassengerSerializer(passengers_data, many=True)
+  #     return serializer.data
 
   
 class UserSerializer(serializers.ModelSerializer):
